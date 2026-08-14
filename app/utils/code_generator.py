@@ -2,14 +2,13 @@ import random
 
 from sqlalchemy.orm import Session
 
-from app.models import Upload
-
+from app.repositories.upload_repository import UploadRepository
 
 def generate_code(db: Session):
     while True:
         code = str(random.randint(1000, 9999))
 
-        existing = db.query(Upload).filter(Upload.code == code).first()
+        upload = UploadRepository.get_by_code(db, code)
 
-        if not existing:
+        if upload is None:
             return code
