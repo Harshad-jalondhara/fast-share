@@ -8,6 +8,7 @@ from app.enums import UploadType
 from app.models import Upload
 from app.schemas import ShareResponse
 from app.repositories.upload_repository import UploadRepository
+from datetime import datetime
 
 router = APIRouter(prefix="/share", tags=["Share"])
 
@@ -15,6 +16,18 @@ router = APIRouter(prefix="/share", tags=["Share"])
 def get_share(code: str, db: Session = Depends(get_db)):
 
     upload = UploadRepository.get_by_code(db, code)
+
+    if upload.expires_at <= datetime.utcnow():
+
+        if upload.file_path and os.path.exists(upload.file_path):
+            os.remove(upload.file_path)
+
+        UploadRepository.delete(db, upload)
+
+        raise HTTPException(
+            status_code=404,
+            detail="This share code has expired"
+        )
 
     if not upload:
         raise HTTPException(

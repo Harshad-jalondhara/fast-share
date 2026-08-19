@@ -14,3 +14,5 @@ class Upload(Base):
     file_path = Column(String(500), nullable=True)
 
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    expires_at = Column(DateTime, nullable=False)

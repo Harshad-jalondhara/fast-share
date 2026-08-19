@@ -10,12 +10,16 @@ from app.utils import generate_code
 
 from app.repositories.upload_repository import UploadRepository
 
+from datetime import datetime, timedelta
 
 UPLOAD_FOLDER = "uploads"
 
 
 def create_file_upload(file: UploadFile, db: Session):
+
     code = generate_code(db)
+
+    expires_at = datetime.utcnow() + timedelta(minutes=1)
 
     file_path = os.path.join(UPLOAD_FOLDER, f"{code}_{file.filename}")
 
@@ -26,7 +30,8 @@ def create_file_upload(file: UploadFile, db: Session):
         code = code,
         type=UploadType.FILE,
         file_name = file.filename,
-        file_path = file_path
+        file_path = file_path,
+        expires_at=expires_at
     )
 
     return UploadRepository.create(db, upload)
@@ -35,10 +40,13 @@ def create_text_upload(text: str, db: Session):
 
     code = generate_code(db)
 
+    expires_at = datetime.utcnow() + timedelta(minutes=1)
+
     upload = Upload(
         code=code,
         type=UploadType.TEXT,
-        text_content=text
+        text_content=text,
+        expires_at=expires_at
     )
 
     return UploadRepository.create(db, upload)
