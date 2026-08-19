@@ -12,7 +12,12 @@ from app.services.cleanup_service import cleanup_expired_uploads
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Fast Share API")
+app = FastAPI(
+    title="Fast Share API",
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,
+)
 
 app.add_middleware(
     CORSMiddleware,
